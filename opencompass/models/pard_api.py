@@ -1,4 +1,5 @@
 from ..base import BaseModel
+from typing import Optional, Dict, List
 
 
 class MyModel(BaseModel):
