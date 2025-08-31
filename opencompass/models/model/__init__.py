@@ -15,8 +15,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Modified from Dream repos: https://github.com/HKUNLP/Dream
 
-
 from .configuration_dream import DreamConfig
 from .modeling_dream import DreamModel
 
-__all__ = ["DreamConfig", "DreamModel"]
+__all__ = ['DreamConfig', 'DreamModel']

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from opencompass.models import PardDreamModel
 
 models = [
@@ -8,9 +7,9 @@ models = [
         
         # ----- Pard-Dream 核心参数 -----
         # 目标模型 (高质量)
-        target_model_name="Qwen/Qwen2.5-7B-Instruct",
+        target_model_name='Qwen/Qwen2.5-7B-Instruct',
         # 草稿模型 (高速度)
-        draft_model_name="Dream-org/Dream-v0-Instruct-7B",
+        draft_model_name='Dream-org/Dream-v0-Instruct-7B',
 
         # ----- 推测解码超参数 -----
         max_parallel_draft=256,
