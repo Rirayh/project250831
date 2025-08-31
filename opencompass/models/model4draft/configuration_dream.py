@@ -14,18 +14,20 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # Modified from Dream repos: https://github.com/HKUNLP/Dream
+
 """Dream model configuration"""
 
 from transformers.configuration_utils import PretrainedConfig
 from transformers.modeling_rope_utils import rope_config_validation
 from transformers.utils import logging
 
+
 logger = logging.get_logger(__name__)
 
 
 class DreamConfig(PretrainedConfig):
-    model_type = 'Dream'
-    keys_to_ignore_at_inference = ['past_key_values']
+    model_type = "Dream"
+    keys_to_ignore_at_inference = ["past_key_values"]
 
     def __init__(
         self,
@@ -35,7 +37,7 @@ class DreamConfig(PretrainedConfig):
         num_hidden_layers=32,
         num_attention_heads=32,
         num_key_value_heads=32,
-        hidden_act='silu',
+        hidden_act="silu",
         max_position_embeddings=32768,
         initializer_range=0.02,
         rms_norm_eps=1e-6,
@@ -75,10 +77,10 @@ class DreamConfig(PretrainedConfig):
         self.attention_dropout = attention_dropout
         # Validate the correctness of rotary position embeddings parameters
         # BC: if there is a 'type' field, move it to 'rope_type'.
-        if self.rope_scaling is not None and 'type' in self.rope_scaling:
-            self.rope_scaling['rope_type'] = self.rope_scaling['type']
+        if self.rope_scaling is not None and "type" in self.rope_scaling:
+            self.rope_scaling["rope_type"] = self.rope_scaling["type"]
         rope_config_validation(self)
-
+        
         super().__init__(
             tie_word_embeddings=tie_word_embeddings,
             **kwargs,

@@ -36,7 +36,6 @@ from .openai_api import OpenAI  # noqa: F401
 from .openai_api import OpenAISDK  # noqa: F401
 from .openai_streaming import OpenAISDKStreaming  # noqa: F401
 from .pangu_api import PanGu  # noqa: F401
-from .pard_dream_model import PardDreamModel
 from .qwen_api import Qwen  # noqa: F401
 from .rendu_api import Rendu  # noqa: F401
 from .sensetime_api import SenseTime  # noqa: F401
@@ -52,3 +51,4 @@ from .yayi_api import Yayi  # noqa: F401
 from .yi_api import YiAPI  # noqa: F401
 from .zhipuai_api import ZhiPuAI  # noqa: F401
 from .zhipuai_v2_api import ZhiPuV2AI  # noqa: F401
+from .pard_dream_model import PardDreamModel

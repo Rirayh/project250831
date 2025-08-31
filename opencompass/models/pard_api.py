@@ -1,6 +1,5 @@
 from ..base import BaseModel
 
-
 class MyModel(BaseModel):
 
     def __init__(self,

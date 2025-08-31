@@ -15,63 +15,59 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Modified from Dream repos: https://github.com/HKUNLP/Dream
+
 """PyTorch Dream model."""
 
 import math
-import os
 from typing import List, Optional, Tuple, Union
-
+import os
 import torch
 import torch.utils.checkpoint
 from torch import nn
-from transformers import PretrainedConfig
+
 from transformers.activations import ACT2FN
 from transformers.cache_utils import Cache, DynamicCache
-from transformers.modeling_outputs import BaseModelOutput, MaskedLMOutput
+from transformers.modeling_outputs import (
+    BaseModelOutput,
+    MaskedLMOutput,
+)
 from transformers.modeling_rope_utils import ROPE_INIT_FUNCTIONS
 from transformers.modeling_utils import PreTrainedModel
-from transformers.utils import (add_start_docstrings,
-                                add_start_docstrings_to_model_forward,
-                                is_flash_attn_2_available,
-                                is_flash_attn_greater_or_equal_2_10, logging)
-
+from transformers.utils import (
+    add_start_docstrings,
+    add_start_docstrings_to_model_forward,
+    is_flash_attn_2_available,
+    is_flash_attn_greater_or_equal_2_10,
+    logging,
+)
+from transformers import PretrainedConfig
 from .configuration_dream import DreamConfig
-from .generation_utils import DreamGenerationConfig, DreamGenerationMixin
+from .generation_utils import DreamGenerationMixin, DreamGenerationConfig
 
 if is_flash_attn_2_available():
-    from transformers.modeling_flash_attention_utils import \
-        _flash_attention_forward
+    from transformers.modeling_flash_attention_utils import _flash_attention_forward
+
 
 logger = logging.get_logger(__name__)
 
-_CHECKPOINT_FOR_DOC = 'Dream-7B'
-_CONFIG_FOR_DOC = 'DreamConfig'
 
+_CHECKPOINT_FOR_DOC = "Dream-7B"
+_CONFIG_FOR_DOC = "DreamConfig"
 
 class BaseModelOutputWithPast(BaseModelOutput):
-
-    def __init__(self,
-                 last_hidden_state: torch.FloatTensor,
-                 hidden_states: Optional[Tuple[torch.FloatTensor]] = None,
-                 attentions: Optional[Tuple[torch.FloatTensor]] = None,
-                 past_key_values: Optional[Tuple[torch.FloatTensor]] = None):
+    def __init__(self, last_hidden_state: torch.FloatTensor, hidden_states: Optional[Tuple[torch.FloatTensor]] = None, attentions: Optional[Tuple[torch.FloatTensor]] = None, past_key_values: Optional[Tuple[torch.FloatTensor]] = None):
         super().__init__(last_hidden_state, hidden_states, attentions)
         self.past_key_values = past_key_values
 
 
 class MaskedLMOutputWithPastKeyValues(MaskedLMOutput):
-
-    def __init__(self,
-                 past_key_values: Optional[List[Tuple[torch.Tensor,
-                                                      torch.Tensor]]] = None,
-                 **kwargs):
+    def __init__(self, past_key_values: Optional[List[Tuple[torch.Tensor, torch.Tensor]]] = None, **kwargs):
         super().__init__(**kwargs)
         self.past_key_values = past_key_values
 
 
 # Copied from transformers.models.llama.modeling_llama.LlamaRMSNorm with Llama->Dream
 class DreamRMSNorm(nn.Module):
-
     def __init__(self, hidden_size, eps=1e-6):
         """
         DreamRMSNorm is equivalent to T5LayerNorm
@@ -84,8 +80,7 @@ class DreamRMSNorm(nn.Module):
         input_dtype = hidden_states.dtype
         hidden_states = hidden_states.to(torch.float32)
         variance = hidden_states.pow(2).mean(-1, keepdim=True)
-        hidden_states = hidden_states * torch.rsqrt(variance +
-                                                    self.variance_epsilon)
+        hidden_states = hidden_states * torch.rsqrt(variance + self.variance_epsilon)
         return self.weight * hidden_states.to(input_dtype)
 
     def extra_repr(self):
@@ -94,7 +89,6 @@ class DreamRMSNorm(nn.Module):
 
 # Copied from transformers.models.llama.modeling_llama.LlamaRotaryEmbedding with Llama->Dream
 class DreamRotaryEmbedding(nn.Module):
-
     def __init__(
         self,
         dim=None,
@@ -102,7 +96,7 @@ class DreamRotaryEmbedding(nn.Module):
         base=10000,
         device=None,
         scaling_factor=1.0,
-        rope_type='default',
+        rope_type="default",
         config: Optional[DreamConfig] = None,
     ):
         super().__init__()
@@ -110,15 +104,15 @@ class DreamRotaryEmbedding(nn.Module):
         self.rope_kwargs = {}
         if config is None:
             logger.warning_once(
-                '`DreamRotaryEmbedding` can now be fully parameterized by passing the model config through the '
-                '`config` argument. All other arguments will be removed in v4.46'
+                "`DreamRotaryEmbedding` can now be fully parameterized by passing the model config through the "
+                "`config` argument. All other arguments will be removed in v4.46"
             )
             self.rope_kwargs = {
-                'rope_type': rope_type,
-                'factor': scaling_factor,
-                'dim': dim,
-                'base': base,
-                'max_position_embeddings': max_position_embeddings,
+                "rope_type": rope_type,
+                "factor": scaling_factor,
+                "dim": dim,
+                "base": base,
+                "max_position_embeddings": max_position_embeddings,
             }
             self.rope_type = rope_type
             self.max_seq_len_cached = max_position_embeddings
@@ -126,26 +120,24 @@ class DreamRotaryEmbedding(nn.Module):
         else:
             # BC: "rope_type" was originally "type"
             if config.rope_scaling is not None:
-                self.rope_type = config.rope_scaling.get(
-                    'rope_type', config.rope_scaling.get('type'))
+                self.rope_type = config.rope_scaling.get("rope_type", config.rope_scaling.get("type"))
             else:
-                self.rope_type = 'default'
+                self.rope_type = "default"
             self.max_seq_len_cached = config.max_position_embeddings
             self.original_max_seq_len = config.max_position_embeddings
 
         self.config = config
         self.rope_init_fn = ROPE_INIT_FUNCTIONS[self.rope_type]
 
-        inv_freq, self.attention_scaling = self.rope_init_fn(
-            self.config, device, **self.rope_kwargs)
-        self.register_buffer('inv_freq', inv_freq, persistent=False)
+        inv_freq, self.attention_scaling = self.rope_init_fn(self.config, device, **self.rope_kwargs)
+        self.register_buffer("inv_freq", inv_freq, persistent=False)
         self.original_inv_freq = self.inv_freq
 
     def reset_parameters(self):
-        inv_freq, self.attention_scaling = self.rope_init_fn(
-            self.config, self.inv_freq.device, **self.rope_kwargs)
-        self.register_buffer('inv_freq', inv_freq, persistent=False)
+        inv_freq, self.attention_scaling = self.rope_init_fn(self.config, self.inv_freq.device, **self.rope_kwargs)
+        self.register_buffer("inv_freq", inv_freq, persistent=False)
         self.original_inv_freq = self.inv_freq
+    
 
     def _dynamic_frequency_update(self, position_ids, device):
         """
@@ -156,34 +148,28 @@ class DreamRotaryEmbedding(nn.Module):
         seq_len = torch.max(position_ids) + 1
         if seq_len > self.max_seq_len_cached:  # growth
             inv_freq, self.attention_scaling = self.rope_init_fn(
-                self.config, device, seq_len=seq_len, **self.rope_kwargs)
-            self.register_buffer(
-                'inv_freq', inv_freq,
-                persistent=False)  # TODO joao: may break with compilation
+                self.config, device, seq_len=seq_len, **self.rope_kwargs
+            )
+            self.register_buffer("inv_freq", inv_freq, persistent=False)  # TODO joao: may break with compilation
             self.max_seq_len_cached = seq_len
 
         if seq_len < self.original_max_seq_len and self.max_seq_len_cached > self.original_max_seq_len:  # reset
-            self.register_buffer('inv_freq',
-                                 self.original_inv_freq,
-                                 persistent=False)
+            self.register_buffer("inv_freq", self.original_inv_freq, persistent=False)
             self.max_seq_len_cached = self.original_max_seq_len
 
     @torch.no_grad()
     def forward(self, x, position_ids):
-        if 'dynamic' in self.rope_type:
+        if "dynamic" in self.rope_type:
             self._dynamic_frequency_update(position_ids, device=x.device)
 
         # Core RoPE block
-        inv_freq_expanded = self.inv_freq[None, :, None].float().expand(
-            position_ids.shape[0], -1, 1)
+        inv_freq_expanded = self.inv_freq[None, :, None].float().expand(position_ids.shape[0], -1, 1)
         position_ids_expanded = position_ids[:, None, :].float()
         # Force float32 (see https://github.com/huggingface/transformers/pull/29285)
         device_type = x.device.type
-        device_type = device_type if isinstance(
-            device_type, str) and device_type != 'mps' else 'cpu'
+        device_type = device_type if isinstance(device_type, str) and device_type != "mps" else "cpu"
         with torch.autocast(device_type=device_type, enabled=False):
-            freqs = (inv_freq_expanded.float()
-                     @ position_ids_expanded.float()).transpose(1, 2)
+            freqs = (inv_freq_expanded.float() @ position_ids_expanded.float()).transpose(1, 2)
             emb = torch.cat((freqs, freqs), dim=-1)
             cos = emb.cos()
             sin = emb.sin()
@@ -198,19 +184,13 @@ class DreamRotaryEmbedding(nn.Module):
 # Copied from transformers.models.llama.modeling_llama.rotate_half
 def rotate_half(x):
     """Rotates half the hidden dims of the input."""
-    x1 = x[..., :x.shape[-1] // 2]
-    x2 = x[..., x.shape[-1] // 2:]
+    x1 = x[..., : x.shape[-1] // 2]
+    x2 = x[..., x.shape[-1] // 2 :]
     return torch.cat((-x2, x1), dim=-1)
 
 
 # Copied from transformers.models.llama.modeling_llama.apply_rotary_pos_emb
-def apply_rotary_pos_emb(q,
-                         k,
-                         cos,
-                         sin,
-                         position_ids=None,
-                         unsqueeze_dim=1,
-                         block_end_index: Optional[torch.Tensor] = None):
+def apply_rotary_pos_emb(q, k, cos, sin, position_ids=None, unsqueeze_dim=1, block_end_index: Optional[torch.Tensor] = None):
     """Applies Rotary Position Embedding to the query and key tensors.
 
     Args:
@@ -235,42 +215,26 @@ def apply_rotary_pos_emb(q,
     query_len, key_len = q.shape[-2], k.shape[-2]
 
     if block_end_index is None:
-        q_embed = (q * cos[:, :, key_len - query_len:key_len, :]) + (
-            rotate_half(q) * sin[:, :, key_len - query_len:key_len, :])
+        q_embed = (q * cos[:, :, key_len - query_len : key_len, :]) + (rotate_half(q) * sin[:, :, key_len - query_len : key_len, :])
     else:
-        q_embed = (
-            q *
-            cos[:, :,
-                block_end_index.item() - query_len:block_end_index.item(), :]
-        ) + (rotate_half(q) *
-             sin[:, :,
-                 block_end_index.item() - query_len:block_end_index.item(), :])
+        q_embed = (q * cos[:, :, block_end_index.item() - query_len : block_end_index.item(), :]) + (rotate_half(q) * sin[:, :, block_end_index.item() - query_len : block_end_index.item(), :])
     k_embed = (k * cos) + (rotate_half(k) * sin)
     return q_embed, k_embed
 
 
 # Copied from transformers.models.mistral.modeling_mistral.MistralMLP with Mistral->Dream
 class DreamMLP(nn.Module):
-
     def __init__(self, config):
         super().__init__()
         self.hidden_size = config.hidden_size
         self.intermediate_size = config.intermediate_size
-        self.gate_proj = nn.Linear(self.hidden_size,
-                                   self.intermediate_size,
-                                   bias=False)
-        self.up_proj = nn.Linear(self.hidden_size,
-                                 self.intermediate_size,
-                                 bias=False)
-        self.down_proj = nn.Linear(self.intermediate_size,
-                                   self.hidden_size,
-                                   bias=False)
+        self.gate_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias=False)
+        self.up_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias=False)
+        self.down_proj = nn.Linear(self.intermediate_size, self.hidden_size, bias=False)
         self.act_fn = ACT2FN[config.hidden_act]
 
     def forward(self, hidden_state):
-        return self.down_proj(
-            self.act_fn(self.gate_proj(hidden_state)) *
-            self.up_proj(hidden_state))
+        return self.down_proj(self.act_fn(self.gate_proj(hidden_state)) * self.up_proj(hidden_state))
 
 
 # Copied from transformers.models.llama.modeling_llama.repeat_kv
@@ -282,12 +246,8 @@ def repeat_kv(hidden_states: torch.Tensor, n_rep: int) -> torch.Tensor:
     batch, num_key_value_heads, slen, head_dim = hidden_states.shape
     if n_rep == 1:
         return hidden_states
-    hidden_states = hidden_states[:, :,
-                                  None, :, :].expand(batch,
-                                                     num_key_value_heads,
-                                                     n_rep, slen, head_dim)
-    return hidden_states.reshape(batch, num_key_value_heads * n_rep, slen,
-                                 head_dim)
+    hidden_states = hidden_states[:, :, None, :, :].expand(batch, num_key_value_heads, n_rep, slen, head_dim)
+    return hidden_states.reshape(batch, num_key_value_heads * n_rep, slen, head_dim)
 
 
 class DreamAttention(nn.Module):
@@ -303,8 +263,9 @@ class DreamAttention(nn.Module):
         if layer_idx is None:
             logger.warning_once(
                 f"Instantiating {self.__class__.__name__} without passing `layer_idx` is not recommended and will "
-                'to errors during the forward call, if caching is used. Please make sure to provide a `layer_idx` '
-                'when creating this class.')
+                "to errors during the forward call, if caching is used. Please make sure to provide a `layer_idx` "
+                "when creating this class."
+            )
 
         self.hidden_size = config.hidden_size
         self.num_heads = config.num_attention_heads
@@ -319,19 +280,12 @@ class DreamAttention(nn.Module):
         if (self.head_dim * self.num_heads) != self.hidden_size:
             raise ValueError(
                 f"hidden_size must be divisible by num_heads (got `hidden_size`: {self.hidden_size}"
-                f" and `num_heads`: {self.num_heads}).")
-        self.q_proj = nn.Linear(self.hidden_size,
-                                self.num_heads * self.head_dim,
-                                bias=True)
-        self.k_proj = nn.Linear(self.hidden_size,
-                                self.num_key_value_heads * self.head_dim,
-                                bias=True)
-        self.v_proj = nn.Linear(self.hidden_size,
-                                self.num_key_value_heads * self.head_dim,
-                                bias=True)
-        self.o_proj = nn.Linear(self.num_heads * self.head_dim,
-                                self.hidden_size,
-                                bias=False)
+                f" and `num_heads`: {self.num_heads})."
+            )
+        self.q_proj = nn.Linear(self.hidden_size, self.num_heads * self.head_dim, bias=True)
+        self.k_proj = nn.Linear(self.hidden_size, self.num_key_value_heads * self.head_dim, bias=True)
+        self.v_proj = nn.Linear(self.hidden_size, self.num_key_value_heads * self.head_dim, bias=True)
+        self.o_proj = nn.Linear(self.num_heads * self.head_dim, self.hidden_size, bias=False)
 
         self.rotary_emb = DreamRotaryEmbedding(config=self.config)
 
@@ -344,69 +298,53 @@ class DreamAttention(nn.Module):
         output_attentions: bool = False,
         use_cache: bool = False,
         cache_position: Optional[torch.LongTensor] = None,
-        position_embeddings: Optional[
-            Tuple[torch.Tensor,
-                  torch.Tensor]] = None,  # will become mandatory in v4.46
-    ) -> Tuple[torch.Tensor, Optional[torch.Tensor],
-               Optional[Tuple[torch.Tensor]]]:
+        position_embeddings: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,  # will become mandatory in v4.46
+    ) -> Tuple[torch.Tensor, Optional[torch.Tensor], Optional[Tuple[torch.Tensor]]]:
         bsz, q_len, _ = hidden_states.size()
 
         query_states = self.q_proj(hidden_states)
         key_states = self.k_proj(hidden_states)
         value_states = self.v_proj(hidden_states)
 
-        query_states = query_states.view(bsz, q_len, self.num_heads,
-                                         self.head_dim).transpose(1, 2)
-        key_states = key_states.view(bsz, q_len, self.num_key_value_heads,
-                                     self.head_dim).transpose(1, 2)
-        value_states = value_states.view(bsz, q_len, self.num_key_value_heads,
-                                         self.head_dim).transpose(1, 2)
+        query_states = query_states.view(bsz, q_len, self.num_heads, self.head_dim).transpose(1, 2)
+        key_states = key_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1, 2)
+        value_states = value_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1, 2)
 
         if position_embeddings is None:
             logger.warning_once(
-                'The attention layers in this model are transitioning from computing the RoPE embeddings internally '
-                'through `position_ids` (2D tensor with the indexes of the tokens), to using externally computed '
-                '`position_embeddings` (Tuple of tensors, containing cos and sin). In v4.46 `position_ids` will be '
-                'removed and `position_embeddings` will be mandatory.')
+                "The attention layers in this model are transitioning from computing the RoPE embeddings internally "
+                "through `position_ids` (2D tensor with the indexes of the tokens), to using externally computed "
+                "`position_embeddings` (Tuple of tensors, containing cos and sin). In v4.46 `position_ids` will be "
+                "removed and `position_embeddings` will be mandatory."
+            )
             cos, sin = self.rotary_emb(value_states, position_ids)
         else:
             cos, sin = position_embeddings
-        query_states, key_states = apply_rotary_pos_emb(
-            query_states, key_states, cos, sin)
+        query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin)
 
         if past_key_value is not None:
-            cache_kwargs = {
-                'sin': sin,
-                'cos': cos,
-                'cache_position': cache_position
-            }  # Specific to RoPE models
-            key_states, value_states = past_key_value.update(
-                key_states, value_states, self.layer_idx, cache_kwargs)
+            cache_kwargs = {"sin": sin, "cos": cos, "cache_position": cache_position}  # Specific to RoPE models
+            key_states, value_states = past_key_value.update(key_states, value_states, self.layer_idx, cache_kwargs)
 
         # repeat k/v heads if n_kv_heads < n_heads
         key_states = repeat_kv(key_states, self.num_key_value_groups)
         value_states = repeat_kv(value_states, self.num_key_value_groups)
 
-        attn_weights = torch.matmul(query_states, key_states.transpose(
-            2, 3)) / math.sqrt(self.head_dim)
+        attn_weights = torch.matmul(query_states, key_states.transpose(2, 3)) / math.sqrt(self.head_dim)
         if attention_mask is not None:  # no matter the length, we just slice it
-            causal_mask = attention_mask[:, :, :, :key_states.shape[-2]]
+            causal_mask = attention_mask[:, :, :, : key_states.shape[-2]]
             attn_weights = attn_weights + causal_mask
 
         # upcast attention to fp32
-        attn_weights = nn.functional.softmax(attn_weights,
-                                             dim=-1,
-                                             dtype=torch.float32).to(
-                                                 query_states.dtype)
-        attn_weights = nn.functional.dropout(attn_weights,
-                                             p=self.attention_dropout,
-                                             training=self.training)
+        attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(query_states.dtype)
+        attn_weights = nn.functional.dropout(attn_weights, p=self.attention_dropout, training=self.training)
         attn_output = torch.matmul(attn_weights, value_states)
 
         if attn_output.size() != (bsz, self.num_heads, q_len, self.head_dim):
             raise ValueError(
                 f"`attn_output` should be of size {(bsz, self.num_heads, q_len, self.head_dim)}, but is"
-                f" {attn_output.size()}")
+                f" {attn_output.size()}"
+            )
 
         attn_output = attn_output.transpose(1, 2).contiguous()
         attn_output = attn_output.reshape(bsz, q_len, self.hidden_size)
@@ -417,7 +355,7 @@ class DreamAttention(nn.Module):
             attn_weights = None
 
         return attn_output, attn_weights, past_key_value
-
+    
 
 class DreamSdpaAttention(DreamAttention):
     """
@@ -436,17 +374,14 @@ class DreamSdpaAttention(DreamAttention):
         output_attentions: bool = False,
         use_cache: bool = False,
         cache_position: Optional[torch.LongTensor] = None,
-        position_embeddings: Optional[
-            Tuple[torch.Tensor,
-                  torch.Tensor]] = None,  # will become mandatory in v4.46
+        position_embeddings: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,  # will become mandatory in v4.46
         replace_position: Optional[torch.Tensor] = None,
         dual_cache: Optional[bool] = False,
-    ) -> Tuple[torch.Tensor, Optional[torch.Tensor],
-               Optional[Tuple[torch.Tensor]]]:
+    ) -> Tuple[torch.Tensor, Optional[torch.Tensor], Optional[Tuple[torch.Tensor]]]:
         if output_attentions:
             # TODO: Improve this warning with e.g. `model.config.attn_implementation = "manual"` once this is implemented.
             logger.warning_once(
-                'DreamModel is using DreamSdpaAttention, but `torch.nn.functional.scaled_dot_product_attention` does not support `output_attentions=True`. Falling back to the manual attention implementation, '
+                "DreamModel is using DreamSdpaAttention, but `torch.nn.functional.scaled_dot_product_attention` does not support `output_attentions=True`. Falling back to the manual attention implementation, "
                 'but specifying the manual implementation will be required from Transformers version v5.0.0 onwards. This warning can be removed using the argument `attn_implementation="eager"` when loading the model.'
             )
             return super().forward(
@@ -467,7 +402,7 @@ class DreamSdpaAttention(DreamAttention):
         if past_key_value is not None:
             if dual_cache:
                 past_key, past_value = past_key_value
-                replace_indices = replace_position.nonzero(as_tuple=True)[1]
+                replace_indices = replace_position.nonzero(as_tuple=True)[1] 
                 past_key[:, replace_indices] = key_states
                 key_states = past_key
                 past_value[:, replace_indices] = value_states
@@ -476,36 +411,28 @@ class DreamSdpaAttention(DreamAttention):
                 past_key, past_value = past_key_value
                 key_states = torch.cat([past_key, key_states], dim=-2)
                 value_states = torch.cat([past_value, value_states], dim=-2)
-
+            
         past_key_value = (key_states, value_states) if use_cache else None
 
-        query_states = query_states.view(bsz, q_len, self.num_heads,
-                                         self.head_dim).transpose(1, 2)
-        key_states = key_states.view(bsz, -1, self.num_key_value_heads,
-                                     self.head_dim).transpose(1, 2)
-        value_states = value_states.view(bsz, -1, self.num_key_value_heads,
-                                         self.head_dim).transpose(1, 2)
+        query_states = query_states.view(bsz, q_len, self.num_heads, self.head_dim).transpose(1, 2)
+        key_states = key_states.view(bsz, -1, self.num_key_value_heads, self.head_dim).transpose(1, 2)
+        value_states = value_states.view(bsz, -1, self.num_key_value_heads, self.head_dim).transpose(1, 2)
 
         if position_embeddings is None:
             logger.warning_once(
-                'The attention layers in this model are transitioning from computing the RoPE embeddings internally '
-                'through `position_ids` (2D tensor with the indexes of the tokens), to using externally computed '
-                '`position_embeddings` (Tuple of tensors, containing cos and sin). In v4.46 `position_ids` will be '
-                'removed and `position_embeddings` will be mandatory.')
+                "The attention layers in this model are transitioning from computing the RoPE embeddings internally "
+                "through `position_ids` (2D tensor with the indexes of the tokens), to using externally computed "
+                "`position_embeddings` (Tuple of tensors, containing cos and sin). In v4.46 `position_ids` will be "
+                "removed and `position_embeddings` will be mandatory."
+            )
             cos, sin = self.rotary_emb(value_states, position_ids)
         else:
             cos, sin = position_embeddings
-
+        
         if dual_cache:
-            query_states, key_states = apply_rotary_pos_emb(
-                query_states,
-                key_states,
-                cos,
-                sin,
-                block_end_index=replace_indices.max() + 1)
+            query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin, block_end_index=replace_indices.max()+1)
         else:
-            query_states, key_states = apply_rotary_pos_emb(
-                query_states, key_states, cos, sin)
+            query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin)
 
         key_states = repeat_kv(key_states, self.num_key_value_groups)
         value_states = repeat_kv(value_states, self.num_key_value_groups)
@@ -516,7 +443,7 @@ class DreamSdpaAttention(DreamAttention):
 
         # SDPA with memory-efficient backend is currently (torch==2.1.2) bugged with non-contiguous inputs with custom attn_mask,
         # Reference: https://github.com/pytorch/pytorch/issues/112577.
-        if query_states.device.type == 'cuda' and attention_mask is not None:
+        if query_states.device.type == "cuda" and attention_mask is not None:
             query_states = query_states.contiguous()
             key_states = key_states.contiguous()
             value_states = value_states.contiguous()
@@ -530,10 +457,9 @@ class DreamSdpaAttention(DreamAttention):
             query_states,
             key_states,
             value_states,
-            attn_mask=attention_mask
-            if isinstance(attention_mask, torch.Tensor) else None,
+            attn_mask=attention_mask if isinstance(attention_mask, torch.Tensor) else None,
             dropout_p=self.attention_dropout if self.training else 0.0,
-            is_causal=False,  # hard coded
+            is_causal=False, # hard coded
         )
 
         attn_output = attn_output.transpose(1, 2).contiguous()
@@ -545,24 +471,22 @@ class DreamSdpaAttention(DreamAttention):
 
 
 class DreamDecoderLayer(nn.Module):
-
     def __init__(self, config: DreamConfig, layer_idx: int):
         super().__init__()
         self.hidden_size = config.hidden_size
 
-        if config.sliding_window and config._attn_implementation != 'flash_attention_2':
+        if config.sliding_window and config._attn_implementation != "flash_attention_2":
             logger.warning_once(
                 f"Sliding Window Attention is enabled but not implemented for `{config._attn_implementation}`; "
-                'unexpected results may be encountered.')
-
+                "unexpected results may be encountered."
+            )
+        
         # self.self_attn = Dream_ATTENTION_CLASSES[config._attn_implementation](config, layer_idx)
         self.self_attn = DreamSdpaAttention(config, layer_idx)
 
         self.mlp = DreamMLP(config)
-        self.input_layernorm = DreamRMSNorm(config.hidden_size,
-                                            eps=config.rms_norm_eps)
-        self.post_attention_layernorm = DreamRMSNorm(config.hidden_size,
-                                                     eps=config.rms_norm_eps)
+        self.input_layernorm = DreamRMSNorm(config.hidden_size, eps=config.rms_norm_eps)
+        self.post_attention_layernorm = DreamRMSNorm(config.hidden_size, eps=config.rms_norm_eps)
 
     def forward(
         self,
@@ -573,14 +497,11 @@ class DreamDecoderLayer(nn.Module):
         output_attentions: Optional[bool] = False,
         use_cache: Optional[bool] = False,
         cache_position: Optional[torch.LongTensor] = None,
-        position_embeddings: Optional[
-            Tuple[torch.Tensor,
-                  torch.Tensor]] = None,  # will become mandatory in v4.46
+        position_embeddings: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,  # will become mandatory in v4.46
         dual_cache: Optional[bool] = False,
         replace_position: Optional[torch.Tensor] = None,
         **kwargs,
-    ) -> Tuple[torch.FloatTensor, Optional[Tuple[torch.FloatTensor,
-                                                 torch.FloatTensor]]]:
+    ) -> Tuple[torch.FloatTensor, Optional[Tuple[torch.FloatTensor, torch.FloatTensor]]]:
         """
         Args:
             hidden_states (`torch.FloatTensor`): input to the layer of shape `(batch, seq_len, embed_dim)`
@@ -628,23 +549,22 @@ class DreamDecoderLayer(nn.Module):
         hidden_states = self.mlp(hidden_states)
         hidden_states = residual + hidden_states
 
-        outputs = (hidden_states, )
+        outputs = (hidden_states,)
 
         if output_attentions:
-            outputs += (self_attn_weights, )
+            outputs += (self_attn_weights,)
 
         if use_cache:
-            outputs += (present_key_value, )
+            outputs += (present_key_value,)
 
         return outputs
 
-
 class DreamPreTrainedModel(PreTrainedModel):
     config_class = DreamConfig
-    base_model_prefix = 'model'
+    base_model_prefix = "model"
     supports_gradient_checkpointing = True
-    _no_split_modules = ['DreamDecoderLayer']
-    _skip_keys_device_placement = 'past_key_values'
+    _no_split_modules = ["DreamDecoderLayer"]
+    _skip_keys_device_placement = "past_key_values"
     _supports_flash_attn_2 = True
     _supports_sdpa = True
     _supports_cache_class = True
@@ -673,7 +593,7 @@ class DreamPreTrainedModel(PreTrainedModel):
         force_download: bool = False,
         local_files_only: bool = False,
         token: Optional[Union[str, bool]] = None,
-        revision: str = 'main',
+        revision: str = "main",
         use_safetensors: Optional[bool] = None,
         weights_only: bool = True,
         **kwargs,
@@ -693,13 +613,13 @@ class DreamPreTrainedModel(PreTrainedModel):
             **kwargs,
         )
         # NOTE(Lin): we need to override the generation config
-        # because the generation config loaded in `from_pretrained`
+        # because the generation config loaded in `from_pretrained` 
         # does not include all the attributes of DreamGenerationConfig
-        resume_download = kwargs.get('resume_download', None)
-        proxies = kwargs.get('proxies', None)
-        subfolder = kwargs.get('subfolder', '')
-        from_auto_class = kwargs.get('_from_auto', False)
-        from_pipeline = kwargs.get('_from_pipeline', None)
+        resume_download = kwargs.get("resume_download", None)
+        proxies = kwargs.get("proxies", None)
+        subfolder = kwargs.get("subfolder", "")
+        from_auto_class = kwargs.get("_from_auto", False)
+        from_pipeline = kwargs.get("_from_pipeline", None)
         _model.generation_config = DreamGenerationConfig.from_pretrained(
             pretrained_model_name_or_path,
             cache_dir=cache_dir,
@@ -715,7 +635,6 @@ class DreamPreTrainedModel(PreTrainedModel):
         )
         return _model
 
-
 class DreamBaseModel(DreamPreTrainedModel):
     """
     Transformer decoder consisting of *config.num_hidden_layers* layers. Each layer is a [`DreamDecoderLayer`]
@@ -729,12 +648,10 @@ class DreamBaseModel(DreamPreTrainedModel):
         self.padding_idx = config.pad_token_id
         self.vocab_size = config.vocab_size
 
-        self.embed_tokens = nn.Embedding(config.vocab_size, config.hidden_size,
-                                         self.padding_idx)
-        self.layers = nn.ModuleList([
-            DreamDecoderLayer(config, layer_idx)
-            for layer_idx in range(config.num_hidden_layers)
-        ])
+        self.embed_tokens = nn.Embedding(config.vocab_size, config.hidden_size, self.padding_idx)
+        self.layers = nn.ModuleList(
+            [DreamDecoderLayer(config, layer_idx) for layer_idx in range(config.num_hidden_layers)]
+        )
         self._attn_implementation = config._attn_implementation
         self.norm = DreamRMSNorm(config.hidden_size, eps=config.rms_norm_eps)
         self.rotary_emb = DreamRotaryEmbedding(config=config)
@@ -765,27 +682,26 @@ class DreamBaseModel(DreamPreTrainedModel):
         replace_position: Optional[torch.Tensor] = None,
     ) -> Union[Tuple, BaseModelOutput]:
         output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
-        output_hidden_states = (output_hidden_states
-                                if output_hidden_states is not None else
-                                self.config.output_hidden_states)
+        output_hidden_states = (
+            output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
+        )
         use_cache = use_cache if use_cache is not None else False
 
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
         if (input_ids is None) ^ (inputs_embeds is not None):
-            raise ValueError(
-                'You must specify exactly one of input_ids or inputs_embeds')
+            raise ValueError("You must specify exactly one of input_ids or inputs_embeds")
 
         if self.gradient_checkpointing and self.training:
             if use_cache:
                 logger.warning_once(
-                    '`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`...'
+                    "`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`..."
                 )
                 use_cache = False
 
         if inputs_embeds is None:
             inputs_embeds = self.embed_tokens(input_ids)
-
+        
         # if use_cache and past_key_values is None:
         #     past_key_values = None
 
@@ -794,26 +710,19 @@ class DreamBaseModel(DreamPreTrainedModel):
         #     cache_position = torch.arange(
         #         past_seen_tokens, past_seen_tokens + inputs_embeds.shape[1], device=inputs_embeds.device
         #     )
-        past_seen_tokens = past_key_values[0][0].shape[
-            1] if past_key_values is not None else 0
+        past_seen_tokens = past_key_values[0][0].shape[1] if past_key_values is not None else 0
         if not dual_cache:
-            position_ids = torch.arange(
-                past_seen_tokens + inputs_embeds.shape[1],
-                device=inputs_embeds.device).unsqueeze(0)
+            position_ids = torch.arange(past_seen_tokens + inputs_embeds.shape[1], device=inputs_embeds.device).unsqueeze(0)
         else:
             if past_key_values is not None:
-                position_ids = torch.arange(
-                    past_seen_tokens, device=inputs_embeds.device).unsqueeze(0)
+                position_ids = torch.arange(past_seen_tokens, device=inputs_embeds.device).unsqueeze(0)
             else:
-                position_ids = torch.arange(
-                    inputs_embeds.shape[1],
-                    device=inputs_embeds.device).unsqueeze(0)
+                position_ids = torch.arange(inputs_embeds.shape[1], device=inputs_embeds.device).unsqueeze(0)
         # if position_ids is None:
         #     position_ids = cache_position.unsqueeze(0)
 
         hidden_states = inputs_embeds
-        attn_key_values: Optional[List[Tuple[
-            torch.Tensor, torch.Tensor]]] = [] if use_cache else None
+        attn_key_values: Optional[List[Tuple[torch.Tensor, torch.Tensor]]] = [] if use_cache else None
 
         # create position embeddings to be shared across the decoder layers
         position_embeddings = self.rotary_emb(hidden_states, position_ids)
@@ -824,10 +733,9 @@ class DreamBaseModel(DreamPreTrainedModel):
 
         for layer_idx, decoder_layer in enumerate(self.layers):
             if output_hidden_states:
-                all_hidden_states += (hidden_states, )
+                all_hidden_states += (hidden_states,)
 
-            layer_past_key_value = past_key_values[
-                layer_idx] if past_key_values is not None else None
+            layer_past_key_value = past_key_values[layer_idx] if past_key_values is not None else None
 
             if self.gradient_checkpointing and self.training:
                 layer_outputs = self._gradient_checkpointing_func(
@@ -860,7 +768,7 @@ class DreamBaseModel(DreamPreTrainedModel):
             hidden_states = layer_outputs[0]
 
             if output_attentions:
-                all_self_attns += (layer_outputs[1], )
+                all_self_attns += (layer_outputs[1],)
             if use_cache:
                 attn_key_values.append(layer_outputs[1])
 
@@ -868,12 +776,10 @@ class DreamBaseModel(DreamPreTrainedModel):
 
         # add hidden states from the last decoder layer
         if output_hidden_states:
-            all_hidden_states += (hidden_states, )
+            all_hidden_states += (hidden_states,)
 
         if not return_dict:
-            return tuple(
-                v for v in [hidden_states, all_hidden_states, all_self_attns]
-                if v is not None)
+            return tuple(v for v in [hidden_states, all_hidden_states, all_self_attns] if v is not None)
         return BaseModelOutputWithPast(
             last_hidden_state=hidden_states,
             hidden_states=all_hidden_states,
@@ -883,15 +789,13 @@ class DreamBaseModel(DreamPreTrainedModel):
 
 
 class DreamModel(DreamGenerationMixin, DreamPreTrainedModel):
-    _tied_weights_keys = ['lm_head.weight']
+    _tied_weights_keys = ["lm_head.weight"]
 
     def __init__(self, config):
         super().__init__(config)
         self.model = DreamBaseModel(config)
         self.vocab_size = config.vocab_size
-        self.lm_head = nn.Linear(config.hidden_size,
-                                 config.vocab_size,
-                                 bias=False)
+        self.lm_head = nn.Linear(config.hidden_size, config.vocab_size, bias=False)
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -938,9 +842,9 @@ class DreamModel(DreamGenerationMixin, DreamPreTrainedModel):
         **loss_kwargs,
     ) -> Union[Tuple, MaskedLMOutput]:
         output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
-        output_hidden_states = (output_hidden_states
-                                if output_hidden_states is not None else
-                                self.config.output_hidden_states)
+        output_hidden_states = (
+            output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
+        )
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
         # decoder outputs consists of (dec_features, layer_state, dec_hidden, dec_attn)
@@ -964,12 +868,11 @@ class DreamModel(DreamGenerationMixin, DreamPreTrainedModel):
 
         loss = None
         if labels is not None:
-            loss = self.loss_function(logits, labels, self.vocab_size,
-                                      **loss_kwargs)
+            loss = self.loss_function(logits, labels, self.vocab_size, **loss_kwargs)
 
         if not return_dict:
-            output = (logits, ) + outputs[1:]
-            return (loss, ) + output if loss is not None else output
+            output = (logits,) + outputs[1:]
+            return (loss,) + output if loss is not None else output
 
         return MaskedLMOutputWithPastKeyValues(
             loss=loss,
