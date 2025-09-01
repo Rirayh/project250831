@@ -1,6 +1,4 @@
 .DS_Store
-output_*/
-outputs/
 scripts/
 icl_inference_output/
 .vscode/
@@ -15,7 +13,6 @@ configs/**/*_bkup.py
 opencompass/**/*_bkup.py
 data
 work_dirs
-outputs
 models/*
 configs/internal/
 # Byte-compiled / optimized / DLL files

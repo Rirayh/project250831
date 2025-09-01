@@ -1,0 +1,15 @@
+08/30 10:16:47 - OpenCompass - INFO - Try to load the data from /home/zhaorun/.cache/opencompass/./data/gsm8k/
+Map:   0%|          | 0/7473 [00:00<?, ? examples/s]Map:  31%|███       | 2299/7473 [00:00<00:00, 22841.30 examples/s]Map:  62%|██████▏   | 4640/7473 [00:00<00:00, 23112.17 examples/s]Map:  93%|█████████▎| 6976/7473 [00:00<00:00, 23187.66 examples/s]Map: 100%|██████████| 7473/7473 [00:00<00:00, 22709.05 examples/s]
+Map:   0%|          | 0/1319 [00:00<?, ? examples/s]Map: 100%|██████████| 1319/1319 [00:00<00:00, 21820.00 examples/s]
+Parameter 'function'=<function OpenICLEvalTask._load_and_preprocess_test_data.<locals>.postprocess at 0x7f98d31c0790> of the transform datasets.arrow_dataset.Dataset._map_single couldn't be hashed properly, a random hash was used instead. Make sure your transforms and parameters are serializable with pickle or dill for the dataset fingerprinting and caching to work. If you reuse this transform, the caching mechanism will consider it to be different from the previous calls and recompute everything. This warning is only showed once. Subsequent hashing failures won't be showed.
+Map:   0%|          | 0/64 [00:00<?, ? examples/s]Map: 100%|██████████| 64/64 [00:00<00:00, 11082.30 examples/s]
+Traceback (most recent call last):
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/tasks/openicl_eval.py", line 466, in <module>
+    inferencer.run()
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/tasks/openicl_eval.py", line 88, in run
+    self._score()
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/tasks/openicl_eval.py", line 94, in _score
+    pred_dicts, pred_strs = self._load_predictions()
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/tasks/openicl_eval.py", line 140, in _load_predictions
+    raise FileNotFoundError(
+FileNotFoundError: Prediction files not found: neither outputs/default/20250830_101627/predictions/pard-qwen2.5-7b/demo_gsm8k.json nor outputs/default/20250830_101627/predictions/pard-qwen2.5-7b/demo_gsm8k_0.json exists

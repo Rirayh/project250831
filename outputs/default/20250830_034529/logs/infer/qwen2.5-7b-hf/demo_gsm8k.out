@@ -1,0 +1,13 @@
+08/30 03:45:36 - OpenCompass - INFO - Task [qwen2.5-7b-hf/demo_gsm8k]
+Traceback (most recent call last):
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/tasks/openicl_infer.py", line 161, in <module>
+    inferencer.run()
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/tasks/openicl_infer.py", line 73, in run
+    self.model = build_model_from_cfg(model_cfg)
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/utils/build.py", line 24, in build_model_from_cfg
+    return MODELS.build(model_cfg)
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/mmengine/registry/registry.py", line 570, in build
+    return self.build_func(cfg, *args, **kwargs, registry=self)
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/mmengine/registry/build_functions.py", line 100, in build_from_cfg
+    raise KeyError(
+KeyError: 'opencompass.models.PardDreamModel is not in the opencompass::model registry. Please check whether the value of `opencompass.models.PardDreamModel` is correct or it was registered as expected. More details can be found at https://mmengine.readthedocs.io/en/latest/advanced_tutorials/config.html#import-the-custom-module'

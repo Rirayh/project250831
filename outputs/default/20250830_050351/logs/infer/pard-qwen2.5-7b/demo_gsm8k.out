@@ -1,0 +1,298 @@
+08/30 05:03:55 - OpenCompass - INFO - Task [pard-qwen2.5-7b/demo_gsm8k]
+08/30 05:03:58 - OpenCompass - INFO - Initializing PardDreamEngine...
+08/30 05:03:58 - OpenCompass - INFO - Loading target model: Qwen/Qwen2.5-7B-Instruct
+Sliding Window Attention is enabled but not implemented for `sdpa`; unexpected results may be encountered.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  5.80it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  6.39it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00,  6.53it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  6.66it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  6.52it/s]
+08/30 05:04:03 - OpenCompass - INFO - Loading draft model: Dream-org/Dream-v0-Instruct-7B
+The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  4.19it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  4.78it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00,  5.14it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  5.59it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  5.26it/s]
+/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/transformers/generation/configuration_utils.py:629: UserWarning: `do_sample` is set to `False`. However, `temperature` is set to `0.0` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `temperature`. This was detected when initializing the generation config instance, which means the corresponding file may hold incorrect parameterization and should be fixed.
+  warnings.warn(
+/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/transformers/generation/configuration_utils.py:629: UserWarning: `do_sample` is set to `False`. However, `temperature` is set to `0.0` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `temperature`.
+  warnings.warn(
+08/30 05:04:08 - OpenCompass - INFO - PardDreamEngine initialized successfully.
+08/30 05:04:11 - OpenCompass - INFO - Try to load the data from /home/zhaorun/.cache/opencompass/./data/gsm8k/
+Map:   0%|          | 0/7473 [00:00<?, ? examples/s]Map:  30%|███       | 2249/7473 [00:00<00:00, 22353.74 examples/s]Map:  61%|██████▏   | 4592/7473 [00:00<00:00, 22953.31 examples/s]Map:  93%|█████████▎| 6975/7473 [00:00<00:00, 23350.58 examples/s]Map: 100%|██████████| 7473/7473 [00:00<00:00, 22717.08 examples/s]
+Map:   0%|          | 0/1319 [00:00<?, ? examples/s]Map: 100%|██████████| 1319/1319 [00:00<00:00, 21470.10 examples/s]
+08/30 05:04:12 - OpenCompass - INFO - Start inferencing [pard-qwen2.5-7b/demo_gsm8k]
+[2025-08-30 05:04:12,280] [opencompass.openicl.icl_inferencer.icl_gen_inferencer] [INFO] Starting build dataloader
+[2025-08-30 05:04:12,281] [opencompass.openicl.icl_inferencer.icl_gen_inferencer] [INFO] Starting inference process...
+  0%|          | 0/64 [00:00<?, ?it/s]  0%|          | 0/64 [00:24<?, ?it/s]
+used steps: 1
+used time: 1.7220253944396973
+used steps: 1
+used time: 0.06491804122924805
+used steps: 1
+used time: 0.06398820877075195
+used steps: 1
+used time: 0.07272863388061523
+used steps: 1
+used time: 0.06373071670532227
+used steps: 1
+used time: 0.06400465965270996
+used steps: 1
+used time: 0.0641944408416748
+used steps: 1
+used time: 0.06440091133117676
+used steps: 1
+used time: 0.0641334056854248
+used steps: 1
+used time: 0.06406736373901367
+used steps: 1
+used time: 0.06412029266357422
+used steps: 1
+used time: 0.06431412696838379
+used steps: 1
+used time: 0.0645747184753418
+used steps: 1
+used time: 0.06462311744689941
+used steps: 1
+used time: 0.0647735595703125
+used steps: 1
+used time: 0.06428027153015137
+used steps: 1
+used time: 0.0644841194152832
+used steps: 1
+used time: 0.06479191780090332
+used steps: 1
+used time: 0.06466460227966309
+used steps: 1
+used time: 0.07891154289245605
+used steps: 1
+used time: 0.06581950187683105
+used steps: 1
+used time: 0.06574034690856934
+used steps: 1
+used time: 0.06586527824401855
+used steps: 1
+used time: 0.07283520698547363
+used steps: 1
+used time: 0.06521844863891602
+used steps: 1
+used time: 0.06719064712524414
+used steps: 1
+used time: 0.06688666343688965
+used steps: 1
+used time: 0.06712698936462402
+used steps: 1
+used time: 0.06711721420288086
+used steps: 1
+used time: 0.07812166213989258
+used steps: 1
+used time: 0.06783366203308105
+used steps: 1
+used time: 0.06791567802429199
+used steps: 1
+used time: 0.06826043128967285
+used steps: 1
+used time: 0.06715011596679688
+used steps: 1
+used time: 0.06822776794433594
+used steps: 1
+used time: 0.06829094886779785
+used steps: 1
+used time: 0.06852459907531738
+used steps: 1
+used time: 0.06856179237365723
+used steps: 1
+used time: 0.07264375686645508
+used steps: 1
+used time: 0.06866288185119629
+used steps: 1
+used time: 0.0685420036315918
+used steps: 1
+used time: 0.06843352317810059
+used steps: 1
+used time: 0.06870150566101074
+used steps: 1
+used time: 0.07725214958190918
+used steps: 1
+used time: 0.07103943824768066
+used steps: 1
+used time: 0.07134008407592773
+used steps: 1
+used time: 0.07104778289794922
+used steps: 1
+used time: 0.0707540512084961
+used steps: 1
+used time: 0.08193731307983398
+used steps: 1
+used time: 0.08472371101379395
+used steps: 1
+used time: 0.07080292701721191
+used steps: 1
+used time: 0.07163190841674805
+used steps: 1
+used time: 0.07157063484191895
+used steps: 1
+used time: 0.07192158699035645
+used steps: 1
+used time: 0.07800579071044922
+used steps: 1
+used time: 0.07421064376831055
+used steps: 1
+used time: 0.07415342330932617
+used steps: 1
+used time: 0.07449889183044434
+used steps: 1
+used time: 0.07421326637268066
+used steps: 1
+used time: 0.07424044609069824
+used steps: 1
+used time: 0.07428812980651855
+used steps: 1
+used time: 0.0746769905090332
+used steps: 1
+used time: 0.07488465309143066
+used steps: 1
+used time: 0.0745086669921875
+used steps: 1
+used time: 0.07462573051452637
+used steps: 1
+used time: 0.07504415512084961
+used steps: 1
+used time: 0.0748436450958252
+used steps: 1
+used time: 0.07487082481384277
+used steps: 1
+used time: 0.0748751163482666
+used steps: 1
+used time: 0.07528138160705566
+used steps: 1
+used time: 0.07558059692382812
+used steps: 1
+used time: 0.07464075088500977
+used steps: 1
+used time: 0.07447695732116699
+used steps: 1
+used time: 0.08538222312927246
+used steps: 1
+used time: 0.07192826271057129
+used steps: 1
+used time: 0.07233905792236328
+used steps: 1
+used time: 0.07241153717041016
+used steps: 1
+used time: 0.0776224136352539
+used steps: 1
+used time: 0.07424759864807129
+used steps: 1
+used time: 0.08502483367919922
+used steps: 1
+used time: 0.07469964027404785
+used steps: 1
+used time: 0.0747365951538086
+used steps: 1
+used time: 0.0755455493927002
+used steps: 1
+used time: 0.07530689239501953
+used steps: 1
+used time: 0.07511639595031738
+used steps: 1
+used time: 0.07310628890991211
+used steps: 1
+used time: 0.07263946533203125
+used steps: 1
+used time: 0.0730733871459961
+used steps: 1
+used time: 0.07313227653503418
+used steps: 1
+used time: 0.0728759765625
+used steps: 1
+used time: 0.0722360610961914
+used steps: 1
+used time: 0.07293128967285156
+used steps: 1
+used time: 0.07302308082580566
+used steps: 1
+used time: 0.07316184043884277
+used steps: 1
+used time: 0.07320332527160645
+used steps: 1
+used time: 0.07928824424743652
+used steps: 1
+used time: 0.08580994606018066
+used steps: 1
+used time: 0.0803077220916748
+used steps: 1
+used time: 0.08319544792175293
+used steps: 1
+used time: 0.07732987403869629
+used steps: 1
+used time: 0.07749080657958984
+used steps: 1
+used time: 0.07684826850891113
+used steps: 1
+used time: 0.0775761604309082
+used steps: 1
+used time: 0.0797111988067627
+used steps: 1
+used time: 0.07976293563842773
+used steps: 1
+used time: 0.08324646949768066
+used steps: 1
+used time: 0.09023451805114746
+used steps: 1
+used time: 0.08053159713745117
+used steps: 1
+used time: 0.07836604118347168
+used steps: 1
+used time: 0.07836222648620605
+used steps: 1
+used time: 0.07860112190246582
+used steps: 1
+used time: 0.07951831817626953
+used steps: 1
+used time: 0.0796053409576416
+used steps: 1
+used time: 0.07930135726928711
+used steps: 1
+used time: 0.07954955101013184
+used steps: 1
+used time: 0.07958364486694336
+used steps: 1
+used time: 0.0796356201171875
+used steps: 1
+used time: 0.07886624336242676
+used steps: 1
+used time: 0.08003854751586914
+used steps: 1
+used time: 0.07873225212097168
+used steps: 1
+used time: 0.0838770866394043
+used steps: 1
+used time: 0.07964086532592773
+used steps: 1
+used time: 0.07886672019958496
+used steps: 1
+used time: 0.07897806167602539
+used steps: 1
+used time: 0.07938122749328613
+used steps: 1
+used time: 0.07904291152954102
+used steps: 1
+used time: 0.07796692848205566
+used steps: 1
+used time: 0.07837080955505371
+used steps: 1
+used time: 0.078643798828125
+used steps: 1
+used time: 0.07843208312988281
+used steps: 1
+used time: 0.07816624641418457
+used steps: 1
+used time: 0.07856011390686035
+Traceback (most recent call last):
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/tasks/openicl_infer.py", line 161, in <module>
+    inferencer.run()
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/tasks/openicl_infer.py", line 89, in run
+    self._inference()
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/tasks/openicl_infer.py", line 134, in _inference
+    inferencer.inference(retriever,
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/openicl/icl_inferencer/icl_gen_inferencer.py", line 153, in inference
+    results = self.model.generate_from_template(
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/models/base.py", line 201, in generate_from_template
+    return self.generate(inputs, max_out_len=max_out_len, **kwargs)
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/models/pard_dream_model.py", line 221, in generate
+    self.logger.debug(f"Pard-Dream Metrics: {metrics}")
+AttributeError: 'PardDreamModel' object has no attribute 'logger'

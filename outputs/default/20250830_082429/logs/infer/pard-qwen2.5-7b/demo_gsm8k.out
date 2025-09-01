@@ -1,0 +1,31 @@
+08/30 08:24:32 - OpenCompass - INFO - Task [pard-qwen2.5-7b/demo_gsm8k]
+08/30 08:24:35 - OpenCompass - INFO - Initializing PardDreamEngine...
+08/30 08:24:35 - OpenCompass - INFO - Loading target model: Qwen/Qwen2.5-7B-Instruct
+Sliding Window Attention is enabled but not implemented for `sdpa`; unexpected results may be encountered.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  5.86it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  7.72it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  9.26it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  8.66it/s]
+08/30 08:24:39 - OpenCompass - INFO - Loading draft model: Dream-org/Dream-v0-Instruct-7B
+The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  6.10it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  7.61it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00,  8.45it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  8.52it/s]
+/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/transformers/generation/configuration_utils.py:629: UserWarning: `do_sample` is set to `False`. However, `temperature` is set to `0.0` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `temperature`. This was detected when initializing the generation config instance, which means the corresponding file may hold incorrect parameterization and should be fixed.
+  warnings.warn(
+/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/transformers/generation/configuration_utils.py:629: UserWarning: `do_sample` is set to `False`. However, `temperature` is set to `0.0` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `temperature`.
+  warnings.warn(
+08/30 08:24:43 - OpenCompass - WARNING - eos_token_id not found in meta_template, using tokenizer's default: 151645
+Traceback (most recent call last):
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/tasks/openicl_infer.py", line 161, in <module>
+    inferencer.run()
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/tasks/openicl_infer.py", line 73, in run
+    self.model = build_model_from_cfg(model_cfg)
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/utils/build.py", line 24, in build_model_from_cfg
+    return MODELS.build(model_cfg)
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/mmengine/registry/registry.py", line 570, in build
+    return self.build_func(cfg, *args, **kwargs, registry=self)
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/mmengine/registry/build_functions.py", line 121, in build_from_cfg
+    obj = obj_cls(**args)  # type: ignore
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/models/pard_dream_model.py", line 209, in __init__
+    self.engine = PardDreamEngine(config, eos_token_id=self.eos_token_id)
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/models/pard_dream_model.py", line 71, in __init__
+    self.mask_id = self.draft_model.config.mask_id
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/transformers/configuration_utils.py", line 214, in __getattribute__
+    return super().__getattribute__(key)
+AttributeError: 'DreamConfig' object has no attribute 'mask_id'

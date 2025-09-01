@@ -1,0 +1,33 @@
+08/30 04:44:43 - OpenCompass - INFO - Task [pard-qwen2.5-7b/demo_gsm8k]
+08/30 04:44:47 - OpenCompass - INFO - Initializing PardDreamEngine...
+08/30 04:44:47 - OpenCompass - INFO - Loading target model: Qwen/Qwen2.5-7B-Instruct
+Sliding Window Attention is enabled but not implemented for `sdpa`; unexpected results may be encountered.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  5.30it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  5.85it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00,  5.78it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  6.02it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  5.89it/s]
+08/30 04:44:53 - OpenCompass - INFO - Loading draft model: Dream-org/Dream-v0-Instruct-7B
+The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:03<00:10,  3.37s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:06<00:07,  3.51s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:10<00:03,  3.44s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:10<00:00,  2.18s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:10<00:00,  2.64s/it]
+/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/transformers/generation/configuration_utils.py:629: UserWarning: `do_sample` is set to `False`. However, `temperature` is set to `0.0` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `temperature`. This was detected when initializing the generation config instance, which means the corresponding file may hold incorrect parameterization and should be fixed.
+  warnings.warn(
+/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/transformers/generation/configuration_utils.py:629: UserWarning: `do_sample` is set to `False`. However, `temperature` is set to `0.0` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `temperature`.
+  warnings.warn(
+08/30 04:46:42 - OpenCompass - INFO - PardDreamEngine initialized successfully.
+08/30 04:46:49 - OpenCompass - INFO - Try to load the data from /home/zhaorun/.cache/opencompass/./data/gsm8k/
+Map:   0%|          | 0/7473 [00:00<?, ? examples/s]Map:  29%|██▉       | 2176/7473 [00:00<00:00, 21617.26 examples/s]Map:  60%|█████▉    | 4464/7473 [00:00<00:00, 22317.15 examples/s]Map:  91%|█████████ | 6787/7473 [00:00<00:00, 22702.19 examples/s]Map: 100%|██████████| 7473/7473 [00:00<00:00, 22121.81 examples/s]
+Map:   0%|          | 0/1319 [00:00<?, ? examples/s]Map: 100%|██████████| 1319/1319 [00:00<00:00, 21388.18 examples/s]
+08/30 04:46:50 - OpenCompass - INFO - Start inferencing [pard-qwen2.5-7b/demo_gsm8k]
+Traceback (most recent call last):
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/tasks/openicl_infer.py", line 161, in <module>
+    inferencer.run()
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/tasks/openicl_infer.py", line 89, in run
+    self._inference()
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/tasks/openicl_infer.py", line 134, in _inference
+    inferencer.inference(retriever,
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/openicl/icl_inferencer/icl_gen_inferencer.py", line 100, in inference
+    prompt_list = self.get_generation_prompt_list_from_retriever_indices(
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/openicl/icl_inferencer/icl_gen_inferencer.py", line 223, in get_generation_prompt_list_from_retriever_indices
+    prompt_token_num = self.model.get_token_len_from_template(
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/models/base.py", line 218, in get_token_len_from_template
+    prompts = self.parse_template(templates, mode=mode)
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/models/base.py", line 161, in parse_template
+    return self.template_parser.parse_template(prompt_template, mode)
+AttributeError: 'PardDreamModel' object has no attribute 'template_parser'

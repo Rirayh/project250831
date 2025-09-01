@@ -1,0 +1,55 @@
+Traceback (most recent call last):
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/tasks/openicl_eval.py", line 19, in <module>
+    from opencompass.tasks.base import BaseTask, extract_role_pred
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/tasks/__init__.py", line 1, in <module>
+    from .openicl_attack import *  # noqa: F401, F403
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/tasks/openicl_attack.py", line 12, in <module>
+    from opencompass.tasks.base import BaseTask
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/tasks/base.py", line 9, in <module>
+    from opencompass.utils import get_infer_output_path, task_abbr_from_cfg
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/utils/__init__.py", line 4, in <module>
+    from .collect_env import *  # noqa
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/utils/collect_env.py", line 2, in <module>
+    from mmengine.utils.dl_utils import collect_env as collect_base_env
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/mmengine/utils/dl_utils/__init__.py", line 3, in <module>
+    from .collect_env import collect_env
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/mmengine/utils/dl_utils/collect_env.py", line 10, in <module>
+    import torch
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/torch/__init__.py", line 2264, in <module>
+    from torch import quantization as quantization  # usort: skip
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/torch/quantization/__init__.py", line 2, in <module>
+    from .fake_quantize import *  # noqa: F403
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/torch/quantization/fake_quantize.py", line 10, in <module>
+    from torch.ao.quantization.fake_quantize import (
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/torch/ao/quantization/__init__.py", line 12, in <module>
+    from .pt2e._numeric_debugger import (  # noqa: F401
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/torch/ao/quantization/pt2e/_numeric_debugger.py", line 9, in <module>
+    from torch.ao.quantization.pt2e.graph_utils import bfs_trace_with_node_process
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/torch/ao/quantization/pt2e/graph_utils.py", line 9, in <module>
+    from torch.export import ExportedProgram
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/torch/export/__init__.py", line 17, in <module>
+    from torch.fx.passes.infra.pass_base import PassResult
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/torch/fx/passes/__init__.py", line 1, in <module>
+    from . import (
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/torch/fx/passes/graph_drawer.py", line 14, in <module>
+    from torch.fx.passes.shape_prop import TensorMetadata
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/torch/fx/passes/shape_prop.py", line 11, in <module>
+    from torch._subclasses.meta_utils import is_sparse_any
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/torch/_subclasses/__init__.py", line 2, in <module>
+    from torch._subclasses.fake_tensor import (
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/torch/_subclasses/fake_tensor.py", line 53, in <module>
+    from ._fake_tensor_utils import _CacheKeyState, _PySymInputStub, _SymIntOutputStub
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/torch/_subclasses/_fake_tensor_utils.py", line 212, in <module>
+    class _CacheKeyState:
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/dataclasses.py", line 1184, in dataclass
+    return wrap(cls)
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/dataclasses.py", line 1175, in wrap
+    return _process_class(cls, init, repr, eq, order, unsafe_hash,
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/dataclasses.py", line 1024, in _process_class
+    _init_fn(all_init_fields,
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/dataclasses.py", line 579, in _init_fn
+    return _create_fn('__init__',
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/dataclasses.py", line 432, in _create_fn
+    exec(txt, globals, ns)
+  File "<string>", line 1, in <module>
+KeyboardInterrupt

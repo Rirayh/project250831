@@ -1,0 +1,34 @@
+08/30 08:16:05 - OpenCompass - INFO - Task [qwen2.5-7b-instruct-hf/demo_gsm8k]
+Sliding Window Attention is enabled but not implemented for `sdpa`; unexpected results may be encountered.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:05,  1.79s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.82s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:05<00:01,  1.78s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.66s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:06<00:00,  1.71s/it]
+08/30 08:16:18 - OpenCompass - INFO - using stop words: ['<|endoftext|>', '<|im_end|>']
+08/30 08:16:21 - OpenCompass - INFO - Try to load the data from /home/zhaorun/.cache/opencompass/./data/gsm8k/
+Map:   0%|          | 0/7473 [00:00<?, ? examples/s]Map:  29%|██▉       | 2200/7473 [00:00<00:00, 21829.26 examples/s]Map:  61%|██████    | 4556/7473 [00:00<00:00, 22836.43 examples/s]Map:  93%|█████████▎| 6915/7473 [00:00<00:00, 23177.50 examples/s]Map: 100%|██████████| 7473/7473 [00:00<00:00, 22492.49 examples/s]
+Map:   0%|          | 0/1319 [00:00<?, ? examples/s]Map: 100%|██████████| 1319/1319 [00:00<00:00, 21727.71 examples/s]
+08/30 08:16:22 - OpenCompass - INFO - Start inferencing [qwen2.5-7b-instruct-hf/demo_gsm8k]
+[2025-08-30 08:16:22,447] [opencompass.openicl.icl_inferencer.icl_gen_inferencer] [INFO] Starting build dataloader
+[2025-08-30 08:16:22,447] [opencompass.openicl.icl_inferencer.icl_gen_inferencer] [INFO] Starting inference process...
+  0%|          | 0/8 [00:00<?, ?it/s]08/30 08:16:22 - OpenCompass - INFO - Generation Args of Huggingface: 
+08/30 08:16:22 - OpenCompass - INFO - {'stopping_criteria': [<opencompass.models.huggingface_above_v4_33._get_stopping_criteria.<locals>.MultiTokenEOSCriteria object at 0x7fed6b7debc0>], 'max_new_tokens': 512, 'pad_token_id': 151643}
+/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/transformers/generation/configuration_utils.py:629: UserWarning: `do_sample` is set to `False`. However, `temperature` is set to `0.7` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `temperature`.
+  warnings.warn(
+/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/transformers/generation/configuration_utils.py:634: UserWarning: `do_sample` is set to `False`. However, `top_p` is set to `0.8` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `top_p`.
+  warnings.warn(
+/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/transformers/generation/configuration_utils.py:651: UserWarning: `do_sample` is set to `False`. However, `top_k` is set to `20` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `top_k`.
+  warnings.warn(
+ 12%|█▎        | 1/8 [00:11<01:21, 11.66s/it]08/30 08:16:34 - OpenCompass - INFO - Generation Args of Huggingface: 
+08/30 08:16:34 - OpenCompass - INFO - {'stopping_criteria': [<opencompass.models.huggingface_above_v4_33._get_stopping_criteria.<locals>.MultiTokenEOSCriteria object at 0x7fed6b7df4f0>], 'max_new_tokens': 512, 'pad_token_id': 151643}
+ 25%|██▌       | 2/8 [00:24<01:14, 12.36s/it]08/30 08:16:46 - OpenCompass - INFO - Generation Args of Huggingface: 
+08/30 08:16:46 - OpenCompass - INFO - {'stopping_criteria': [<opencompass.models.huggingface_above_v4_33._get_stopping_criteria.<locals>.MultiTokenEOSCriteria object at 0x7fed6b7dfb20>], 'max_new_tokens': 512, 'pad_token_id': 151643}
+ 38%|███▊      | 3/8 [00:34<00:56, 11.33s/it]08/30 08:16:57 - OpenCompass - INFO - Generation Args of Huggingface: 
+08/30 08:16:57 - OpenCompass - INFO - {'stopping_criteria': [<opencompass.models.huggingface_above_v4_33._get_stopping_criteria.<locals>.MultiTokenEOSCriteria object at 0x7fed6b7ded10>], 'max_new_tokens': 512, 'pad_token_id': 151643}
+ 50%|█████     | 4/8 [00:46<00:45, 11.45s/it]08/30 08:17:08 - OpenCompass - INFO - Generation Args of Huggingface: 
+08/30 08:17:08 - OpenCompass - INFO - {'stopping_criteria': [<opencompass.models.huggingface_above_v4_33._get_stopping_criteria.<locals>.MultiTokenEOSCriteria object at 0x7fed6b7df940>], 'max_new_tokens': 512, 'pad_token_id': 151643}
+ 62%|██████▎   | 5/8 [00:54<00:31, 10.38s/it]08/30 08:17:17 - OpenCompass - INFO - Generation Args of Huggingface: 
+08/30 08:17:17 - OpenCompass - INFO - {'stopping_criteria': [<opencompass.models.huggingface_above_v4_33._get_stopping_criteria.<locals>.MultiTokenEOSCriteria object at 0x7fed6b7de770>], 'max_new_tokens': 512, 'pad_token_id': 151643}
+ 75%|███████▌  | 6/8 [01:04<00:20, 10.19s/it]08/30 08:17:27 - OpenCompass - INFO - Generation Args of Huggingface: 
+08/30 08:17:27 - OpenCompass - INFO - {'stopping_criteria': [<opencompass.models.huggingface_above_v4_33._get_stopping_criteria.<locals>.MultiTokenEOSCriteria object at 0x7fed6b7de590>], 'max_new_tokens': 512, 'pad_token_id': 151643}
+ 88%|████████▊ | 7/8 [01:13<00:09,  9.76s/it]08/30 08:17:35 - OpenCompass - INFO - Generation Args of Huggingface: 
+08/30 08:17:35 - OpenCompass - INFO - {'stopping_criteria': [<opencompass.models.huggingface_above_v4_33._get_stopping_criteria.<locals>.MultiTokenEOSCriteria object at 0x7fed6b7ddf60>], 'max_new_tokens': 512, 'pad_token_id': 151643}
+100%|██████████| 8/8 [01:22<00:00,  9.42s/it]100%|██████████| 8/8 [01:22<00:00, 10.27s/it]
+08/30 08:17:44 - OpenCompass - INFO - time elapsed: 98.99s

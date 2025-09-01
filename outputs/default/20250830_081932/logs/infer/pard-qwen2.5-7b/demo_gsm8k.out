@@ -1,0 +1,27 @@
+08/30 08:19:35 - OpenCompass - INFO - Task [pard-qwen2.5-7b/demo_gsm8k]
+WARNING: Could not import DreamModel. Using placeholder class.
+08/30 08:19:39 - OpenCompass - INFO - Initializing PardDreamEngine...
+08/30 08:19:39 - OpenCompass - INFO - Loading target model: Qwen/Qwen2.5-7B-Instruct
+Sliding Window Attention is enabled but not implemented for `sdpa`; unexpected results may be encountered.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  5.51it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  6.04it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00,  6.25it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  6.40it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  6.25it/s]
+08/30 08:19:45 - OpenCompass - INFO - Loading draft model: Dream-org/Dream-v0-Instruct-7B
+Traceback (most recent call last):
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/tasks/openicl_infer.py", line 161, in <module>
+    inferencer.run()
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/tasks/openicl_infer.py", line 73, in run
+    self.model = build_model_from_cfg(model_cfg)
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/utils/build.py", line 24, in build_model_from_cfg
+    return MODELS.build(model_cfg)
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/mmengine/registry/registry.py", line 570, in build
+    return self.build_func(cfg, *args, **kwargs, registry=self)
+  File "/net/scratch2/zhaorun/zichen/junlong/conda_envs/fdllm/lib/python3.10/site-packages/mmengine/registry/build_functions.py", line 121, in build_from_cfg
+    obj = obj_cls(**args)  # type: ignore
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/models/pard_dream_model.py", line 196, in __init__
+    self.engine = PardDreamEngine(config, eos_token_id=self.eos_token_id)
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/models/pard_dream_model.py", line 57, in __init__
+    self._load_models_and_tokenizers()
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/models/pard_dream_model.py", line 70, in _load_models_and_tokenizers
+    self.draft_model = DreamModel.from_pretrained(
+  File "/net/scratch2/zhaorun/zichen/junlong/projects/pard_eval_on_opencompass/opencompass/models/pard_dream_model.py", line 19, in from_pretrained
+    raise NotImplementedError(
+NotImplementedError: DreamModel is not available. Please install the required 'model4draft' library.

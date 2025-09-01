@@ -1,0 +1,7 @@
+08/31 19:02:00 - OpenCompass - INFO - Try to load the data from /home/wenzichen/.cache/opencompass/./data/gsm8k/
+Map:   0%|          | 0/7473 [00:00<?, ? examples/s]Map:  42%|████▏     | 3152/7473 [00:00<00:00, 31342.33 examples/s]Map: 100%|██████████| 7473/7473 [00:00<00:00, 31039.13 examples/s]Map: 100%|██████████| 7473/7473 [00:00<00:00, 30715.44 examples/s]
+Map:   0%|          | 0/1319 [00:00<?, ? examples/s]Map: 100%|██████████| 1319/1319 [00:00<00:00, 29862.61 examples/s]
+Parameter 'function'=<function OpenICLEvalTask._load_and_preprocess_test_data.<locals>.postprocess at 0x7f0aacccb880> of the transform datasets.arrow_dataset.Dataset._map_single couldn't be hashed properly, a random hash was used instead. Make sure your transforms and parameters are serializable with pickle or dill for the dataset fingerprinting and caching to work. If you reuse this transform, the caching mechanism will consider it to be different from the previous calls and recompute everything. This warning is only showed once. Subsequent hashing failures won't be showed.
+Map:   0%|          | 0/1319 [00:00<?, ? examples/s]Map: 100%|██████████| 1319/1319 [00:00<00:00, 30232.89 examples/s]
+08/31 19:02:01 - OpenCompass - INFO - Running 0-th replica of evaluation
+08/31 19:02:01 - OpenCompass - INFO - time elapsed:  73.67s
